@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "/opt/homebrew/Cellar/maven/3.9.11/libexec/bin:$PATH"
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -11,14 +15,14 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running unit tests...'
+                echo 'Running tests...'
                 sh 'mvn test'
             }
         }
 
         stage('Code Coverage Report') {
             steps {
-                echo 'Generating JaCoCo coverage report...'
+                echo 'Generating JaCoCo report...'
                 sh 'mvn jacoco:report'
             }
         }
@@ -26,12 +30,10 @@ pipeline {
 
     post {
         success {
-            echo 'Build completed successfully!'
+            echo '✅ Build and tests completed successfully!'
         }
         failure {
-            echo 'Build failed!'
+            echo '❌ Build failed!'
         }
     }
 }
-
-                
