@@ -2,35 +2,36 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/lakewash/jacoco-demo.git'
-            }
-        }
-
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                echo 'Building project...'
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Test and Code Coverage') {
+        stage('Test') {
             steps {
+                echo 'Running unit tests...'
                 sh 'mvn test'
             }
         }
 
-        stage('JaCoCo Report') {
+        stage('Code Coverage Report') {
             steps {
-                jacoco execPattern: '**/target/*.exec', classPattern: '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: ''
+                echo 'Generating JaCoCo coverage report...'
+                sh 'mvn jacoco:report'
             }
         }
     }
 
     post {
-        always {
-            junit '**/target/surefire-reports/*.xml'
-            jacoco()
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
+
+                
